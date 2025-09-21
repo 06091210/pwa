@@ -1,57 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>My PWA Demo</title>
-
-  <!-- PWA マニフェスト -->
-  <link rel="manifest" href="/manifest.json">
-
-  <!-- iOS 用（Safari） -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
-
-  <!-- テーマカラー -->
-  <meta name="theme-color" content="#0066cc">
-
-  <style>
-    body { font-family: system-ui, -apple-system, "Helvetica Neue", sans-serif; padding: 2rem; }
-    header { display:flex; gap:10px; align-items:center; }
-  </style>
+  <meta charset="UTF-8">
+  <title>MJTE</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async 
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script>
+    window.MathJax = {
+      tex: {
+        displayMath: [["\\[", "\\]"], ["$$", "$$"]],
+        inlineMath: [["\\(", "\\)"]]
+      },
+      chtml: {
+        displayAlign: 'left'
+      }
+    };
+  </script>
+<style>
+  #input {
+    margin-bottom: 100px;
+    width: 100%;
+    height: 10em;
+    font-size: 1rem;
+  }
+  #output {
+    white-space: prewrap;
+    overflow-x: auto;
+    font-size: 1rem;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <img src="/icons/icon-192.png" width="48" height="48" alt="icon">
-    <h1>My PWA Demo</h1>
-  </header>
-  <p>ホーム画面に追加すると、アプリのように起動できます。</p>
-
+  <textarea id="input"></textarea>
+  <div id="output"></div>
   <script>
-    // サービスワーカー登録（PWA のための基本）
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js').then(() => {
-        console.log('Service Worker registered');
-      }).catch((e) => console.error('SW登録失敗', e));
-    }
-
-    // 任意："インストール促進"のための beforeinstallprompt を扱う（Chrome系）
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      // 好きなUIでインストール促進ボタンを出すことができます
-      const btn = document.createElement('button');
-      btn.textContent = 'ホーム画面に追加';
-      btn.onclick = async () => {
-        deferredPrompt.prompt();
-        const choice = await deferredPrompt.userChoice;
-        console.log('choice', choice);
-        deferredPrompt = null;
-      };
-      document.body.appendChild(btn);
-    });
-  </script>
+  const input = document.getElementById("input");
+  const output = document.getElementById("output");
+  input.addEventListener("input", () => {
+    output.innerHTML = "\\["+input.value+"\\]";
+    MathJax.typesetPromise([output]);
+  }); 
+</script>
 </body>
-</html>
